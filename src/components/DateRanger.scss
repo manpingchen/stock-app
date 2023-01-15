@@ -5,7 +5,8 @@
   max-width: 400px;
   margin-bottom: 0.5rem;
   position: absolute;
-  top: -2rem;
+  top: 0;
+  z-index: 2;
   @include row-full(0.5rem);
   
   button {
