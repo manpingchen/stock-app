@@ -30,7 +30,7 @@ function CustomAxisTick(props) {
       });
     }
     if (selectedRange === "max") {
-      text = datetimeFormatter(value, {
+      text = datetimeFormatter({
         date: value,
         config: {
           year: "numeric",

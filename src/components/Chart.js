@@ -1,5 +1,13 @@
 import { useContext } from "react";
-import { LineChart, Line, YAxis, ResponsiveContainer, CartesianGrid, XAxis, Tooltip } from "recharts";
+import {
+  LineChart,
+  Line,
+  YAxis,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  Tooltip,
+} from "recharts";
 import CustomAxisTick from "../components/CustomAxisTick";
 import CustomTooltip from "../components/CustomTooltip";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
@@ -9,7 +17,7 @@ function Chart() {
   const { chartData } = useContext(DateRangeContext);
 
   return (
-    <ResponsiveContainer aspect={16.0 / 9.0}>
+    <ResponsiveContainer aspect={16 / 9}>
       <LineChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <Line
@@ -20,7 +28,10 @@ function Chart() {
           dot={false}
           activeDot={{ r: 4 }}
         />
-        <Tooltip content={({active, payload})=><CustomTooltip data={payload} active={active} />} />
+
+        <Tooltip
+          content={({ active, payload }) => <CustomTooltip data={payload} active={active} />}
+        />
         <XAxis
           allowDataOverflow
           interval="preserveStartEnd"

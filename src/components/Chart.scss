@@ -1,12 +1,25 @@
 @import "../assets/mixins";
+@import "../assets/variables";
 
 .recharts-responsive-container {
-    position: relative;
+  position: absolute;
+  top: 0;
 }
 .recharts-wrapper {
-  display: flex;
-  flex-direction: column-reverse;
+  margin-bottom: 4rem;
   & > * {
     flex-shrink: 0;
   }
+}
+
+.recharts-tooltip-wrapper {
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.recharts-surface {
+  margin-left: -14px;
+  transform: scale(1.03);
+  margin-top: 2rem;
 }

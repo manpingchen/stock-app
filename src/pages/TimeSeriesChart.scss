@@ -2,59 +2,103 @@
 @import "../assets/mixins";
 
 main {
-  @include column(0.5rem);
-  width: 100%;
+  @include row(0.5rem);
+  width: 90%;
   max-width: 1000px;
-  margin: 0 auto;
-  padding: $main-padding;
+  margin: 1rem auto;
+  flex-wrap: wrap;
 
   @media screen and (min-width: $breakpoint-desktop-sm) {
     margin-top: 1rem;
     flex-direction: row;
+    width: 98%;
+    margin: 2rem auto;
+    max-width: 1000px;
+    padding: $main-padding;
+  }
+
+  .intro {
+    @include column(0);
+    width: 30%;
+    justify-content: center;
+
+    h2 {
+      font-size: 3rem;
+    }
+    h3 {
+      font-size: 2.6rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    h6 {
+      @include note;
+      margin-bottom: 1rem;
+    }
+
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      width: 100%;
+    }
   }
 
   .highlight {
     @include row-full(0.5rem, space-between);
-    margin-bottom: 1rem;
     width: 100%;
 
     @media screen and (min-width: $breakpoint-desktop-sm) {
       flex-direction: column;
-      max-width: 400px;
-      width: 30%;
     }
 
-    &__intro {
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      width: 100%;
       @include column(0.5rem);
-      h2 {
-        font-size: 2rem;
-      }
-      h3 {
-        font-size: 1.6rem;
-      }
     }
 
     &__detail {
-      @include row(0.5rem);
+      @include row-full(0.25rem, space-evenly);
       list-style: none;
-      width: calc(200px + 0.5rem);
+      width: 100%;
       flex-wrap: wrap;
+      border-radius: $border-radius;
+      border: 1px solid #ddd;
+      padding: 1rem;
+
+      @media screen and (max-width: $breakpoint-tablet-sm) {
+        margin-bottom: 0.5rem;
+        @include row-full(0.25rem, flex-start);
+      }
 
       li {
-        font-size: 0.875rem;
-        width: 100px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
         @include column(0.25rem);
+
+        @media screen and (max-width: $breakpoint-tablet-sm) {
+          width: calc((100% - 0.5rem) / 3);
+        }
       }
 
       &-title {
-        font-size: 0.785rem;
-        color: gray;
+        @include note;
       }
     }
   }
 
   .chart {
-    position: relative;
     flex-grow: 1;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 60% !important;
+    padding-top: 41.25%;
+    position: relative;
+
+    @media screen and (min-width: $breakpoint-desktop-sm) {
+      min-width: 500px;
+    }
+
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      @include aspect16_9;
+    }
   }
 }
