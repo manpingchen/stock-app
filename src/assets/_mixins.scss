@@ -1,0 +1,46 @@
+@import "./variables";
+
+@mixin button {
+  background: none;
+  border: none;
+  border-radius: $border-radius;
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: gray;
+
+  &:hover {
+    color: black;
+  }
+  &.active {
+    background: #ddd;
+    color: white;
+  }
+}
+
+@mixin row-full($gap: $flex-gap, $type: "space-around") {
+  display: flex;
+  flex-direction: row;
+  justify-content: $type;
+  gap: $gap;
+}
+
+@mixin row-center-h($gap: $flex-gap) {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: $gap;
+}
+
+@mixin column($gap: $flex-gap) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+@mixin row($gap: $flex-gap) {
+  display: flex;
+  flex-direction: row;
+  gap: $gap;
+}

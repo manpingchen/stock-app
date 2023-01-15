@@ -1,0 +1,12 @@
+@import "../assets/mixins";
+
+.buttons {
+  width: 100%;
+  max-width: 250px;
+  margin-bottom: 0.5rem;
+  @include row-full(0.5rem);
+  
+  button {
+    @include button;
+  }
+}
