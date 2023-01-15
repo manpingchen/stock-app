@@ -1,36 +1,38 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, createContext, useCallback, useTransition } from "react";
 import { sortDatesAsc } from "../helpers/sortDates";
 import {
   LineChart,
   Line,
   YAxis,
   Tooltip,
-  CartesianGrid,
   ResponsiveContainer,
   XAxis,
 } from "recharts";
+import { fetchData, lastRefreshed } from "../api/fetchData";
+import DateRanger from "../components/DateRanger";
 import { subtractDays } from "../helpers/subtractDays";
-import { fetchData } from "../api/fetchData";
+import CustomizedAxisTick from "../components/CustomizedAxisTick";
+
+export const DateRangeContext = createContext({});
 
 function TimeSeriesLineChart() {
   const [chartData, setChartData] = useState(null);
   const [metaData, setMetaData] = useState(null);
   const [timeSeriesData, setTimeSeriesData] = useState(null);
-  const [dayRange, setDayRange] = useState({
-    start: null,
-    end: null,
-  });
+  const [dayRange, setDayRange] = useState({ start: null, end: null });
+  const [isPending, startTransition] = useTransition();
+  const [selectedRange, setSelectedRange] = useState("1day");
 
   const mounted = useRef(false);
   const { start, end } = dayRange;
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
         <div className="custom-tooltip">
-          <p className="label">{label}</p>
-          <p className="value">{`${payload[0].value}`}</p>
-          <p className="des">Volume ({`${payload[0].payload["5. volume"]}`})</p>
+          <p className="label">{payload[0].payload.name}</p>
+          <p className="value">{payload[0].value}</p>
+          <p className="des">Volume ({payload[0].payload["5. volume"]})</p>
         </div>
       );
     }
@@ -38,34 +40,61 @@ function TimeSeriesLineChart() {
     return null;
   };
 
-  const handleUpdateDayRange = ({ endDate = dayRange.end, range = "1day" }) => {
-    let startDate;
+  const getDateRangedData = useCallback(() => {
+    if (!timeSeriesData) return;
 
-    if (range === "1day") {
-      startDate = subtractDays(endDate, 1);
-    }
-    if (range === "7days") {
-      startDate = subtractDays(endDate, 7);
-    }
-    if (range === "1month") {
-      startDate = subtractDays(endDate, 7);
-    }
-    setDayRange({ start: startDate, end: endDate });
-  };
+    startTransition(() => {
+      const dateRangedData = [];
+
+      for (const [key, value] of Object.entries(timeSeriesData)) {
+        const dataDate = new Date(key);
+        if ((start && dataDate > start && dataDate <= end) || (!start && dataDate <= end)) {
+          dateRangedData.push({ name: key, ...value });
+          dateRangedData.sort(sortDatesAsc("name"));
+        }
+      }
+
+      console.log(dateRangedData[0]);
+      setChartData(dateRangedData);
+    });
+  }, [timeSeriesData, start, end]);
+
+  const handleUpdateDayRange = useCallback(
+    ({ range }) => {
+      console.log("handleUpdateDayRange", { range });
+      const endDate = new Date(lastRefreshed);
+      let startDate;
+
+      switch (range) {
+        case "7days":
+          startDate = subtractDays(lastRefreshed, 7);
+          break;
+        case "1month":
+          startDate = subtractDays(lastRefreshed, 30);
+          break;
+        case "all":
+          startDate = null;
+          break;
+        case "1day":
+        default:
+          startDate = subtractDays(lastRefreshed, 1);
+          break;
+      }
+      setDayRange({ start: startDate, end: endDate });
+      getDateRangedData();
+    },
+    [getDateRangedData]
+  );
 
   useEffect(() => {
     const loadData = async () => {
       console.log("loadData");
-      
+
       const { metaData, timeSeriesData } = await fetchData();
-      
       if (metaData && timeSeriesData) {
         setMetaData(metaData);
         setTimeSeriesData(timeSeriesData);
-
-        const { lastRefreshed } = metaData;
-        const endDate = new Date(lastRefreshed);
-        setDayRange({ start: subtractDays(endDate, 1), end: endDate });
+        handleUpdateDayRange({ range: "1day" });
       }
     };
 
@@ -75,76 +104,65 @@ function TimeSeriesLineChart() {
 
     mounted.current = true;
     return () => {
-      mounted.current = false
+      mounted.current = false;
     };
   }, []);
 
   useEffect(() => {
-    if (timeSeriesData) {
-      // Form Date-Ranged Data
+    getDateRangedData();
+  }, [getDateRangedData]);
 
-      const dateRangedData = [];
-
-      for (const [key, value] of Object.entries(timeSeriesData)) {
-
-        const dataDate = new Date(key);
-        if (dataDate >= start && dataDate <= end) {
-          dateRangedData.push({ name: key, ...value });
-          dateRangedData.sort(sortDatesAsc("name"));
-        }
-
-      }
-
-      setChartData(dateRangedData);
-    }
-  }, [timeSeriesData, start]);
-
-  if (chartData === null) {
+  if (!chartData) {
     return "loading";
   }
 
   return (
-    <main>
-      <div>
-        <h2>{metaData.symbol}</h2>
-        <h3>{chartData[chartData.length - 1]["4. close"]}</h3>
-        <p>Last Refreshed: {metaData.lastRefreshed} </p>
-      </div>
-      <div className="day-ranger-buttons">
-        <button type="button" onClick={() => handleUpdateDayRange({ range: "1day" })}>
-          1 Day
-        </button>
-        <button type="button" onClick={() => handleUpdateDayRange({ range: "7days" })}>
-          7 Days
-        </button>
-        <button type="button" onClick={() => handleUpdateDayRange({ range: "1month" })}>
-          1 Month
-        </button>
-      </div>
-      <ResponsiveContainer aspect={16.0 / 9.0}>
-        <LineChart
-          width={400}
-          height={400}
-          data={chartData}
-        >
-          <Line dataKey="4. close" stroke="pink" activeDot={{ r: 3 }} />
-          <XAxis dataKey="name" />
-          <YAxis
-            dataKey="4. close"
-            height={100}
-            domain={[
-              (dataMin) => parseFloat(dataMin).toFixed(2),
-              (dataMax) => parseFloat(dataMax).toFixed(2),
-            ]}
-            type="number"
-            allowDataOverflow={true}
-            tickSize={7}
-          />
-          <Tooltip content={CustomTooltip} />
-          <CartesianGrid strokeDasharray="1 3" />
-        </LineChart>
-      </ResponsiveContainer>
-    </main>
+    <DateRangeContext.Provider
+      value={{ metaData, selectedRange, setSelectedRange, dayRange, handleUpdateDayRange }}
+    >
+      <main>
+        <div>
+          <h2>{metaData.symbol}</h2>
+          <h3>{chartData[chartData.length - 1]["4. close"]}</h3>
+          <p>Last Refreshed: {end.toISOString()} </p>
+        </div>
+        <DateRanger />
+
+        {isPending ? (
+          "pending"
+        ) : (
+          <ResponsiveContainer aspect={16.0 / 9.0}>
+            <LineChart data={chartData}>
+              <Line
+                type="natural"
+                dataKey="4. close"
+                stroke="pink"
+                dot={false}
+                activeDot={{ r: 4 }}
+              />
+              <XAxis
+                allowDataOverflow
+                interval="preserveStartEnd"
+                allowDuplicatedCategory={false}
+                dataKey="name"
+                tickSize={0}
+                tick={<CustomizedAxisTick />}
+              />
+              <YAxis
+                dataKey="4. close"
+                allowDataOverflow
+                domain={[
+                  (dataMin) => parseFloat(dataMin).toFixed(2),
+                  (dataMax) => parseFloat(dataMax).toFixed(2),
+                ]}
+                type="number"
+              />
+              <Tooltip content={CustomTooltip} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </main>
+    </DateRangeContext.Provider>
   );
 }
 
