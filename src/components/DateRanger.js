@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
 import { dayRanges } from "../config/dayRanges";
+import "./DateRanger.scss";
 
 function DateRanger() {
   const { selectedRange, setSelectedRange, handleUpdateDayRange } = useContext(DateRangeContext);
@@ -10,13 +11,16 @@ function DateRanger() {
     setSelectedRange(range);
   };
 
+  const isActive = (value) => selectedRange === value;
+
   return (
-    <div className="day-ranger-buttons">
+    <div className="buttons">
       {dayRanges.map((range, index) => (
         <button
           type="button"
           key={index}
-          disabled={selectedRange === range.value}
+          className={isActive(range.value) ? "active" : null}
+          disabled={isActive(range.value)}
           onClick={() => handleButtonOnClick(range.value)}
         >
           {range.name}

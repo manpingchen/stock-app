@@ -1,32 +1,43 @@
 import { useContext, useEffect, useState } from "react";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
+import { datetimeFormatter } from "../helpers/dateHandlers";
 
-function CustomizedAxisTick(props) {
+function CustomAxisTick(props) {
   const { metaData, selectedRange } = useContext(DateRangeContext);
   const [tickText, setTickText] = useState("");
   const { x, y, payload } = props;
 
   useEffect(() => {
     const { value } = payload;
-    const date = new Date(value);
     let text;
 
     if (selectedRange === "1day") {
-      text = date.toLocaleString("default", {
-        hour: "2-digit",
-        timeZone: metaData.timeZone,
+      text = datetimeFormatter({
+        date: value,
+        config: {
+          hour: "2-digit",
+        },
       });
     }
 
     if (selectedRange === "7days" || selectedRange === "1month") {
-      text = date.toLocaleString("default", {
-        day: "numeric",
-        month: "short",
-        timeZone: metaData.timeZone,
+      text = datetimeFormatter({
+        date: value,
+        config: {
+          day: "numeric",
+          month: "short",
+        },
       });
     }
-    if (selectedRange === "all") {
-      text = date.toLocaleString("default", { month: "short", timeZone: metaData.timeZone });
+    if (selectedRange === "max") {
+      text = datetimeFormatter(value, {
+        date: value,
+        config: {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        },
+      });
     }
 
     setTickText(text);
@@ -41,4 +52,4 @@ function CustomizedAxisTick(props) {
   );
 }
 
-export default CustomizedAxisTick;
+export default CustomAxisTick;

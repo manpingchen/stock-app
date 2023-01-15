@@ -1,0 +1,29 @@
+@import "../assets/variables";
+@import "../assets/mixins";
+
+.tooltip {
+  background: white;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+  
+  .value {
+    font-weight: bold;
+  }
+
+  @media screen and (max-width: $breakpoint-mobile-lg) {
+    text-align: center;
+    padding: 0.25rem;
+    position: absolute;
+    top: -30px;
+    right: 0;
+    background: unset;
+    padding: unset;
+    border: unset;
+
+    &__data {
+      @include row-center-h;
+    }
+  }
+}

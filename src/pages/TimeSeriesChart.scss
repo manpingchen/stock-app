@@ -1,0 +1,60 @@
+@import "../assets/variables";
+@import "../assets/mixins";
+
+main {
+  @include column(0.5rem);
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: $main-padding;
+
+  @media screen and (min-width: $breakpoint-desktop-sm) {
+    margin-top: 1rem;
+    flex-direction: row;
+  }
+
+  .highlight {
+    @include row-full(0.5rem, space-between);
+    margin-bottom: 1rem;
+    width: 100%;
+
+    @media screen and (min-width: $breakpoint-desktop-sm) {
+      flex-direction: column;
+      max-width: 400px;
+      width: 30%;
+    }
+
+    &__intro {
+      @include column(0.5rem);
+      h2 {
+        font-size: 2rem;
+      }
+      h3 {
+        font-size: 1.6rem;
+      }
+    }
+
+    &__detail {
+      @include row(0.5rem);
+      list-style: none;
+      width: calc(200px + 0.5rem);
+      flex-wrap: wrap;
+
+      li {
+        font-size: 0.875rem;
+        width: 100px;
+        @include column(0.25rem);
+      }
+
+      &-title {
+        font-size: 0.785rem;
+        color: gray;
+      }
+    }
+  }
+
+  .chart {
+    position: relative;
+    flex-grow: 1;
+  }
+}

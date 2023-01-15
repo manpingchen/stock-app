@@ -1,0 +1,12 @@
+@import "../assets/mixins";
+
+.recharts-responsive-container {
+    position: relative;
+}
+.recharts-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+  & > * {
+    flex-shrink: 0;
+  }
+}

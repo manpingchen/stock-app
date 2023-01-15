@@ -1,23 +1,18 @@
 import { useEffect, useState, useRef, createContext, useCallback, useTransition } from "react";
-import { sortDatesAsc } from "../helpers/sortDates";
-import {
-  LineChart,
-  Line,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  XAxis,
-} from "recharts";
 import { fetchData, lastRefreshed } from "../api/fetchData";
+import { datetimeFormatter, sortDatesAsc, subtractDays } from "../helpers/dateHandlers";
+import { numberFormatter } from "../helpers/numberFormatter";
 import DateRanger from "../components/DateRanger";
-import { subtractDays } from "../helpers/subtractDays";
-import CustomizedAxisTick from "../components/CustomizedAxisTick";
+import Chart from "../components/Chart";
+import Loading from "../components/LoadingIndicator";
+import "./TimeSeriesChart.scss";
 
 export const DateRangeContext = createContext({});
 
 function TimeSeriesLineChart() {
   const [chartData, setChartData] = useState(null);
   const [metaData, setMetaData] = useState(null);
+  const [latestData, setLatestData] = useState(null);
   const [timeSeriesData, setTimeSeriesData] = useState(null);
   const [dayRange, setDayRange] = useState({ start: null, end: null });
   const [isPending, startTransition] = useTransition();
@@ -25,20 +20,6 @@ function TimeSeriesLineChart() {
 
   const mounted = useRef(false);
   const { start, end } = dayRange;
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip">
-          <p className="label">{payload[0].payload.name}</p>
-          <p className="value">{payload[0].value}</p>
-          <p className="des">Volume ({payload[0].payload["5. volume"]})</p>
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   const getDateRangedData = useCallback(() => {
     if (!timeSeriesData) return;
@@ -54,7 +35,6 @@ function TimeSeriesLineChart() {
         }
       }
 
-      console.log(dateRangedData[0]);
       setChartData(dateRangedData);
     });
   }, [timeSeriesData, start, end]);
@@ -72,7 +52,7 @@ function TimeSeriesLineChart() {
         case "1month":
           startDate = subtractDays(lastRefreshed, 30);
           break;
-        case "all":
+        case "max":
           startDate = null;
           break;
         case "1day":
@@ -91,9 +71,34 @@ function TimeSeriesLineChart() {
       console.log("loadData");
 
       const { metaData, timeSeriesData } = await fetchData();
+
       if (metaData && timeSeriesData) {
         setMetaData(metaData);
         setTimeSeriesData(timeSeriesData);
+
+        const latestData = {
+          open: numberFormatter(timeSeriesData[lastRefreshed]["1. open"]),
+          high: numberFormatter(timeSeriesData[lastRefreshed]["2. high"]),
+          low: numberFormatter(timeSeriesData[lastRefreshed]["3. low"]),
+          close: numberFormatter(timeSeriesData[lastRefreshed]["4. close"]),
+          volume: timeSeriesData[lastRefreshed]["5. volume"],
+        };
+
+        setLatestData({
+          ...latestData,
+          dateTime: datetimeFormatter({
+            date: lastRefreshed,
+            config: {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "numeric",
+              
+            },
+            showTimeZoneName: true,
+          }),
+        });
         handleUpdateDayRange({ range: "1day" });
       }
     };
@@ -113,54 +118,54 @@ function TimeSeriesLineChart() {
   }, [getDateRangedData]);
 
   if (!chartData) {
-    return "loading";
+    return <Loading fullScreen={true} />;
   }
 
   return (
     <DateRangeContext.Provider
-      value={{ metaData, selectedRange, setSelectedRange, dayRange, handleUpdateDayRange }}
+      value={{
+        chartData,
+        metaData,
+        selectedRange,
+        setSelectedRange,
+        dayRange,
+        handleUpdateDayRange,
+      }}
     >
       <main>
-        <div>
-          <h2>{metaData.symbol}</h2>
-          <h3>{chartData[chartData.length - 1]["4. close"]}</h3>
-          <p>Last Refreshed: {end.toISOString()} </p>
-        </div>
-        <DateRanger />
-
-        {isPending ? (
-          "pending"
-        ) : (
-          <ResponsiveContainer aspect={16.0 / 9.0}>
-            <LineChart data={chartData}>
-              <Line
-                type="natural"
-                dataKey="4. close"
-                stroke="pink"
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-              <XAxis
-                allowDataOverflow
-                interval="preserveStartEnd"
-                allowDuplicatedCategory={false}
-                dataKey="name"
-                tickSize={0}
-                tick={<CustomizedAxisTick />}
-              />
-              <YAxis
-                dataKey="4. close"
-                allowDataOverflow
-                domain={[
-                  (dataMin) => parseFloat(dataMin).toFixed(2),
-                  (dataMax) => parseFloat(dataMax).toFixed(2),
-                ]}
-                type="number"
-              />
-              <Tooltip content={CustomTooltip} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        <section className="highlight">
+          <div className="highlight__intro">
+            <h2>{metaData.symbol}</h2>
+            <h3>{latestData.close}</h3>
+            <h6>{latestData.dateTime}</h6>
+          </div>
+          <ul className="highlight__detail">
+            <li>
+              <span className="highlight__detail-title">Open</span>
+              <span>{latestData.open}</span>
+            </li>
+            <li>
+              <span className="highlight__detail-title">High</span>
+              <span>{latestData.high}</span>
+            </li>
+            <li>
+              <span className="highlight__detail-title">Low</span>
+              <span>{latestData.low}</span>
+            </li>
+            <li>
+              <span className="highlight__detail-title">Close</span>
+              <span>{latestData.close}</span>
+            </li>
+            <li>
+              <span className="highlight__detail-title">Volume</span>
+              <span>{latestData.volume}</span>
+            </li>
+          </ul>
+        </section>
+        <section className="chart">
+          <DateRanger />
+          {isPending ? <Loading /> : <Chart />}
+        </section>
       </main>
     </DateRangeContext.Provider>
   );

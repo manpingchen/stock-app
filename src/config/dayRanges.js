@@ -12,7 +12,7 @@ export const dayRanges = [
     value: "1month",
   },
   {
-    name: "all",
-    value: "all",
+    name: "max",
+    value: "max",
   },
 ];
