@@ -1,24 +1,37 @@
-export const fetchData = async () => {
-  try {
-    const response = await fetch(
-      "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&outputsize=full&apikey=demo"
-    );
+import axios from "axios";
 
-    const data = await response.json();
-    const timeSeriesData = data["Time Series (5min)"];
+export let lastRefreshed;
+
+export const fetchData = async ({ method, symbol, apikey, interval, outputsize }) => {
+  try {
+    const baseUrl = "https://www.alphavantage.co/query";
+    const response = await axios.get(baseUrl, {
+      params: {
+        function: method,
+        symbol,
+        interval,
+        outputsize,
+        apikey,
+      },
+    });
+
+    const data = await response.data;
+
+    const timeSeriesData = Object.values(data)[1];
+    const metaDataValue = Object.values(data)[0];
+
     const metaData = {
-      information: data["Meta Data"]["1. Information"],
-      symbol: data["Meta Data"]["2. Symbol"],
-      timeZone: data["Meta Data"]["6. Time Zone"],
+      information: metaDataValue["1. Information"],
+      symbol: metaDataValue["2. Symbol"],
+      timeZone: metaDataValue["6. Time Zone"],
       lastRefreshed,
+      daily: !interval,
     };
 
-    lastRefreshed = data["Meta Data"]["3. Last Refreshed"];
+    lastRefreshed = metaDataValue["3. Last Refreshed"];
 
     return { metaData, timeSeriesData };
   } catch (error) {
     return console.log("fetchData", { error });
   }
 };
-
-export let lastRefreshed;

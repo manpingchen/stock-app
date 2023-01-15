@@ -6,6 +6,7 @@ import DateRanger from "../components/DateRanger";
 import Chart from "../components/Chart";
 import Loading from "../components/LoadingIndicator";
 import "./TimeSeriesChart.scss";
+import { TSCO, IBM, fetchConfig } from "../config/symbols";
 
 export const DateRangeContext = createContext({});
 
@@ -17,6 +18,7 @@ function TimeSeriesLineChart() {
   const [dayRange, setDayRange] = useState({ start: null, end: null });
   const [isPending, startTransition] = useTransition();
   const [selectedRange, setSelectedRange] = useState("1day");
+  const [symbol, setSymbol] = useState(IBM);
 
   const mounted = useRef(false);
   const { start, end } = dayRange;
@@ -41,6 +43,7 @@ function TimeSeriesLineChart() {
 
   const handleUpdateDayRange = useCallback(
     ({ range }) => {
+      setChartData(null);
       const endDate = new Date(lastRefreshed);
       let startDate;
 
@@ -65,9 +68,13 @@ function TimeSeriesLineChart() {
     [getDateRangedData]
   );
 
+  const handleUpdateSymbol = (value) => {
+    setSymbol(value);
+  };
+
   useEffect(() => {
     const loadData = async () => {
-      const { metaData, timeSeriesData } = await fetchData();
+      const { metaData, timeSeriesData } = await fetchData(fetchConfig[symbol]);
 
       if (metaData && timeSeriesData) {
         setMetaData(metaData);
@@ -95,31 +102,38 @@ function TimeSeriesLineChart() {
             showTimeZoneName: true,
           }),
         });
-        handleUpdateDayRange({ range: "1day" });
+
+        const range = symbol === TSCO ? "7days" : "1day";
+        handleUpdateDayRange({ range });
       }
     };
 
     if (mounted) {
-      loadData();
+      setChartData(null);
+
+      startTransition(() => {
+        loadData();
+      });
     }
 
     mounted.current = true;
     return () => {
       mounted.current = false;
     };
-  }, []);
+  }, [symbol]);
 
   useEffect(() => {
     getDateRangedData();
   }, [getDateRangedData]);
 
-  if (!chartData) {
+  if (!metaData || !latestData) {
     return <Loading fullScreen={true} />;
   }
 
   return (
     <DateRangeContext.Provider
       value={{
+        isPending,
         chartData,
         metaData,
         selectedRange,
@@ -128,15 +142,27 @@ function TimeSeriesLineChart() {
         handleUpdateDayRange,
       }}
     >
+      <header>
+        <select
+          className="symbol-select"
+          onChange={(e) => handleUpdateSymbol(e.target.value)}
+          value={symbol}
+          disabled={isPending}
+        >
+          <option value={IBM}>IBM (Intrady)</option>
+          <option value={TSCO}>TSCO.LON (Daily)</option>
+        </select>
+      </header>
       <main>
         <section className="intro">
           <h2>{metaData.symbol}</h2>
           <h3>{latestData.close}</h3>
           <h6>{latestData.dateTime}</h6>
+          <h6>{metaData.information}</h6>
         </section>
         <section className="chart">
           <DateRanger />
-          {isPending ? <Loading /> : <Chart />}
+          {isPending || !chartData ? <Loading /> : <Chart />}
         </section>
         <section className="highlight">
           <ul className="highlight__detail">

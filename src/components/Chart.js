@@ -43,10 +43,11 @@ function Chart() {
         <YAxis
           dataKey="4. close"
           allowDataOverflow
+          interval="preserveStartEnd"
           fontSize={10}
           domain={[
-            (dataMin) => parseFloat(dataMin).toFixed(2),
-            (dataMax) => parseFloat(dataMax).toFixed(2),
+            (dataMin) => Math.floor(dataMin * 100) / 100 - 1,
+            (dataMax) => Math.ceil(dataMax * 100) / 100 + 1, // to add some space for the top of the chart
           ]}
           type="number"
         />
