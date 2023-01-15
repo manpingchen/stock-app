@@ -18,6 +18,18 @@
   }
 }
 
+@mixin select {
+  background: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+  color: gray;
+  &:focus{
+    border: none;
+    outline: none;
+  }
+}
+
 @mixin row-full($gap: $flex-gap, $type: space-around) {
   display: flex;
   flex-direction: row;

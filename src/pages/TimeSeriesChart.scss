@@ -21,6 +21,7 @@ main {
     @include column(0);
     width: 30%;
     justify-content: center;
+    margin-bottom: 1rem;
 
     h2 {
       font-size: 3rem;
@@ -33,11 +34,11 @@ main {
 
     h6 {
       @include note;
-      margin-bottom: 1rem;
     }
 
     @media screen and (max-width: $breakpoint-tablet-sm) {
       width: 100%;
+      margin-top: 3rem;
     }
   }
 
@@ -88,7 +89,7 @@ main {
   .chart {
     flex-grow: 1;
     margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     width: 60% !important;
     padding-top: 41.25%;
     position: relative;
@@ -101,4 +102,11 @@ main {
       @include aspect16_9;
     }
   }
+}
+
+.symbol-select {
+  @include select;
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
 }

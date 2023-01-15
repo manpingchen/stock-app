@@ -5,7 +5,9 @@ export const sortDatesAsc = (key) => (a, b) => {
 export const subtractDays = (date, days) => {
   const duplicatedDate = new Date(date);
   duplicatedDate.setDate(duplicatedDate.getDate() - days);
-  const newDate = new Date(duplicatedDate);
+
+  // get the last min of the day
+  const newDate = new Date(duplicatedDate).setHours(23, 59, 59, 999);
   return newDate;
 };
 
