@@ -2,8 +2,10 @@
 
 .buttons {
   width: 100%;
-  max-width: 250px;
+  max-width: 400px;
   margin-bottom: 0.5rem;
+  position: absolute;
+  top: -2rem;
   @include row-full(0.5rem);
   
   button {

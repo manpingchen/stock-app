@@ -21,17 +21,31 @@ function CustomTooltip(props) {
     },
   });
 
-
   return (
     <div className="tooltip">
       <div className="tooltip__data">
         <p className="label">{dateTime}</p>
         <p className="value">{numberFormatter(value)}</p>
-        <p className="dec">Open {numberFormatter(payload["1. open"])}</p>
-        <p className="dec">High {numberFormatter(payload["2. high"])}</p>
-        <p className="dec">Low {numberFormatter(payload["3. low"])}</p>
-        <p className="dec">Close {numberFormatter(payload["4. close"])}</p>
-        <p className="dec">Volume {payload["5. volume"]}</p>
+        <p className="dec">
+          <span className="tooltip__data-title">Open</span>
+          <span>{numberFormatter(payload["1. open"])}</span>
+        </p>
+        <p className="dec">
+          <span className="tooltip__data-title">High</span>
+          <span>{numberFormatter(payload["2. high"])}</span>
+        </p>
+        <p className="dec">
+          <span className="tooltip__data-title">Low</span>
+          <span>{numberFormatter(payload["3. low"])}</span>
+        </p>
+        <p className="dec">
+          <span className="tooltip__data-title">Close</span>
+          <span>{numberFormatter(payload["4. close"])}</span>
+        </p>
+        <p className="dec">
+          <span className="tooltip__data-title">Volume</span>
+          <span>{payload["5. volume"]}</span>
+        </p>
       </div>
     </div>
   );

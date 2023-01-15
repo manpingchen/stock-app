@@ -16,6 +16,7 @@ export const datetimeFormatter = ({ date, config, showTimeZoneName = false }) =>
     ? { ...config, timeZone, timeZoneName: "longOffset" }
     : { ...config, timeZone };
 
+  // to be improved, getting GMT from timezone
   const dateObj = new Date(`${date} GMT-05:00`);
   const dateTime = new Intl.DateTimeFormat("en-US", config).format(dateObj);
   return dateTime;

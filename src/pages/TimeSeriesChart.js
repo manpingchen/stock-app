@@ -41,7 +41,6 @@ function TimeSeriesLineChart() {
 
   const handleUpdateDayRange = useCallback(
     ({ range }) => {
-      console.log("handleUpdateDayRange", { range });
       const endDate = new Date(lastRefreshed);
       let startDate;
 
@@ -68,8 +67,6 @@ function TimeSeriesLineChart() {
 
   useEffect(() => {
     const loadData = async () => {
-      console.log("loadData");
-
       const { metaData, timeSeriesData } = await fetchData();
 
       if (metaData && timeSeriesData) {
@@ -94,7 +91,6 @@ function TimeSeriesLineChart() {
               day: "numeric",
               hour: "2-digit",
               minute: "numeric",
-              
             },
             showTimeZoneName: true,
           }),
@@ -133,12 +129,16 @@ function TimeSeriesLineChart() {
       }}
     >
       <main>
+        <section className="intro">
+          <h2>{metaData.symbol}</h2>
+          <h3>{latestData.close}</h3>
+          <h6>{latestData.dateTime}</h6>
+        </section>
+        <section className="chart">
+          <DateRanger />
+          {isPending ? <Loading /> : <Chart />}
+        </section>
         <section className="highlight">
-          <div className="highlight__intro">
-            <h2>{metaData.symbol}</h2>
-            <h3>{latestData.close}</h3>
-            <h6>{latestData.dateTime}</h6>
-          </div>
           <ul className="highlight__detail">
             <li>
               <span className="highlight__detail-title">Open</span>
@@ -161,10 +161,6 @@ function TimeSeriesLineChart() {
               <span>{latestData.volume}</span>
             </li>
           </ul>
-        </section>
-        <section className="chart">
-          <DateRanger />
-          {isPending ? <Loading /> : <Chart />}
         </section>
       </main>
     </DateRangeContext.Provider>

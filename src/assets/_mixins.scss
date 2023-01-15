@@ -18,7 +18,7 @@
   }
 }
 
-@mixin row-full($gap: $flex-gap, $type: "space-around") {
+@mixin row-full($gap: $flex-gap, $type: space-around) {
   display: flex;
   flex-direction: row;
   justify-content: $type;
@@ -43,4 +43,17 @@
   display: flex;
   flex-direction: row;
   gap: $gap;
+}
+
+@mixin note {
+  font-size: 0.75rem;
+  color: gray;
+  font-weight: normal;
+}
+
+@mixin aspect16_9 {
+  width: 100%;
+  padding-top: 56.25%;
+  position: relative;
+  height: 0;
 }

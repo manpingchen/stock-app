@@ -4,26 +4,30 @@
 .tooltip {
   background: white;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid #ddd !important;
   font-size: 0.75rem;
   line-height: 1.5rem;
-  
+
   .value {
     font-weight: bold;
   }
 
+  &__data {
+    @include column(0);
+    text-align: left;
+    padding: 0.5rem;
+    flex-wrap: wrap;
+    p {
+      @include row-full(0, space-between);
+    }
+    &-title {
+      @include note;
+    }
+  }
+
   @media screen and (max-width: $breakpoint-mobile-lg) {
     text-align: center;
-    padding: 0.25rem;
-    position: absolute;
-    top: -30px;
-    right: 0;
-    background: unset;
     padding: unset;
-    border: unset;
-
-    &__data {
-      @include row-center-h;
-    }
+    border: 1px solid #ddd !important;
   }
 }
