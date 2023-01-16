@@ -1,0 +1,34 @@
+@import "../assets/variables";
+@import "../assets/mixins";
+
+.tooltip {
+  background: white;
+  padding: 0.5rem;
+  border: 1px solid #ddd !important;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+  z-index: 3;
+
+  .value {
+    font-weight: bold;
+  }
+
+  &__data {
+    @include column(0);
+    text-align: left;
+    padding: 0.5rem;
+    flex-wrap: wrap;
+    p {
+      @include row-full(0, space-between);
+    }
+    &-title {
+      @include note;
+    }
+  }
+
+  @media screen and (max-width: $breakpoint-mobile-lg) {
+    text-align: center;
+    padding: unset;
+    border: 1px solid #ddd !important;
+  }
+}

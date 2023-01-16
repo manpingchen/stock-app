@@ -1,0 +1,112 @@
+@import "../assets/variables";
+@import "../assets/mixins";
+
+main {
+  @include row(0.5rem);
+  width: 90%;
+  max-width: 1000px;
+  margin: 1rem auto;
+  flex-wrap: wrap;
+
+  @media screen and (min-width: $breakpoint-desktop-sm) {
+    margin-top: 1rem;
+    flex-direction: row;
+    width: 98%;
+    margin: 2rem auto;
+    max-width: 1000px;
+    padding: $main-padding;
+  }
+
+  .intro {
+    @include column(0);
+    width: 30%;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 3rem;
+    }
+    h3 {
+      font-size: 2.6rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    h6 {
+      @include note;
+    }
+
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      width: 100%;
+      margin-top: 3rem;
+    }
+  }
+
+  .highlight {
+    @include row-full(0.5rem, space-between);
+    width: 100%;
+
+    @media screen and (min-width: $breakpoint-desktop-sm) {
+      flex-direction: column;
+    }
+
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      width: 100%;
+      @include column(0.5rem);
+    }
+
+    &__detail {
+      @include row-full(0.25rem, space-evenly);
+      list-style: none;
+      width: 100%;
+      flex-wrap: wrap;
+      border-radius: $border-radius;
+      border: 1px solid #ddd;
+      padding: 1rem;
+
+      @media screen and (max-width: $breakpoint-tablet-sm) {
+        margin-bottom: 0.5rem;
+        @include row-full(0.25rem, flex-start);
+      }
+
+      li {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        @include column(0.25rem);
+
+        @media screen and (max-width: $breakpoint-tablet-sm) {
+          width: calc((100% - 0.5rem) / 3);
+        }
+      }
+
+      &-title {
+        @include note;
+      }
+    }
+  }
+
+  .chart {
+    flex-grow: 1;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    width: 60% !important;
+    padding-top: 41.25%;
+    position: relative;
+
+    @media screen and (min-width: $breakpoint-desktop-sm) {
+      min-width: 500px;
+    }
+
+    @media screen and (max-width: $breakpoint-tablet-sm) {
+      @include aspect16_9;
+    }
+  }
+}
+
+.symbol-select {
+  @include select;
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+}
