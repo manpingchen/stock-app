@@ -132,18 +132,22 @@ const subtractDays = (date, range) => {
 ##### Format DateTime
 ``` js 
 const datetimeFormatter = ({ date, config, showTimeZoneName = false }) => {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  config = showTimeZoneName
-    ? { ...config, timeZone, timeZoneName: "longOffset" }
-    : { ...config, timeZone };
+  const dataDate = new Date(date);
+  const localeDate = new Date(dataDate.toLocaleString("default", { timeZone: metaDataTimeZone }));
+  const diff = (localeDate - dataDate) / 36e5; // 36e5 = 60*60*1000 (hour)
 
-  // to be improved, getting GMT from timezone
-  const dateObj = new Date(`${date} GMT-05:00`);
-  const dateTime = new Intl.DateTimeFormat("en-US", config).format(dateObj);
-  return dateTime;
+  config = {
+    ...config,
+    timeZone: localTimeZone,
+    timeZoneName: showTimeZoneName ? "shortOffset" : undefined,
+  };
+
+  const localeDateObj = new Date(`${dataDate} GMT${diff}`);
+  const formattedLocaleDate = new Intl.DateTimeFormat("default", config).format(localeDateObj);
+  return formattedLocaleDate;
 };
-
 ```
 #### numberFormatter.js
 ```js

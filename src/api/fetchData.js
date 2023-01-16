@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export let lastRefreshed;
+export let metaDataTimeZone;
 
 // ref: https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&outputsize=full&apikey=demo
 // Response Format:
@@ -52,11 +53,12 @@ export const fetchData = async ({ method, symbol, apikey, interval, outputsize }
     const metaData = {
       information: metaDataValue["1. Information"],
       symbol: metaDataValue["2. Symbol"],
-      timeZone: metaDataValue["6. Time Zone"],
+      timeZone: metaDataTimeZone,
       lastRefreshed,
       daily: !interval,
     };
 
+    metaDataTimeZone = metaDataValue["6. Time Zone"];
     lastRefreshed = metaDataValue["3. Last Refreshed"];
 
     return { metaData, timeSeriesData };
