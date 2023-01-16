@@ -6,7 +6,8 @@ import DateRanger from "../components/DateRanger";
 import Chart from "../components/Chart";
 import Loading from "../components/LoadingIndicator";
 import "./TimeSeriesChart.scss";
-import { TSCO, IBM, fetchConfig } from "../config/symbols";
+import { TSCO, IBM, fetchConfig, symbolDataDefaultRange } from "../config/symbols";
+import { DAY, MAX } from "../config/dayRanges";
 
 export const DateRangeContext = createContext({});
 
@@ -17,7 +18,7 @@ function TimeSeriesLineChart() {
   const [timeSeriesData, setTimeSeriesData] = useState(null);
   const [dayRange, setDayRange] = useState({ start: null, end: null });
   const [isPending, startTransition] = useTransition();
-  const [selectedRange, setSelectedRange] = useState("1day");
+  const [selectedRange, setSelectedRange] = useState(DAY);
   const [symbol, setSymbol] = useState(IBM);
 
   const mounted = useRef(false);
@@ -44,24 +45,13 @@ function TimeSeriesLineChart() {
   const handleUpdateDayRange = useCallback(
     ({ range }) => {
       setChartData(null);
+
       const endDate = new Date(lastRefreshed);
       let startDate;
 
-      switch (range) {
-        case "7days":
-          startDate = subtractDays(lastRefreshed, 7);
-          break;
-        case "1month":
-          startDate = subtractDays(lastRefreshed, 30);
-          break;
-        case "max":
-          startDate = null;
-          break;
-        case "1day":
-        default:
-          startDate = subtractDays(lastRefreshed, 1);
-          break;
-      }
+      if (range !== MAX) startDate = subtractDays(lastRefreshed, range);
+      if (range === MAX) startDate = null;
+
       setDayRange({ start: startDate, end: endDate });
       getDateRangedData();
     },
@@ -69,6 +59,7 @@ function TimeSeriesLineChart() {
   );
 
   const handleUpdateSymbol = (value) => {
+    setChartData(null);
     setSymbol(value);
   };
 
@@ -103,7 +94,7 @@ function TimeSeriesLineChart() {
           }),
         });
 
-        const range = symbol === TSCO ? "7days" : "1day";
+        const range = symbolDataDefaultRange[symbol];
         handleUpdateDayRange({ range });
       }
     };
@@ -117,6 +108,7 @@ function TimeSeriesLineChart() {
     }
 
     mounted.current = true;
+
     return () => {
       mounted.current = false;
     };
