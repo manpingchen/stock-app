@@ -1,19 +1,23 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
 import { dayRanges } from "../config/dayRanges";
 import "./DateRanger.scss";
 
 function DateRanger() {
-  const { isPending, metaData, selectedRange, setSelectedRange, handleUpdateDayRange } =
-    useContext(DateRangeContext);
+  const {
+    isPending,
+    setChartData,
+    metaData,
+    selectedRange,
+    setSelectedRange,
+    handleUpdateDayRange,
+  } = useContext(DateRangeContext);
 
-  const handleButtonOnClick = useCallback(
-    (range) => {
-      handleUpdateDayRange({ range });
-      setSelectedRange(range);
-    },
-    [handleUpdateDayRange, setSelectedRange]
-  );
+  const handleButtonOnClick = (range) => {
+    setSelectedRange(range);
+    setChartData(null);
+    handleUpdateDayRange({ range });
+  };
 
   const isActive = (value) => selectedRange === value;
 
