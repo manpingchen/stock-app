@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
-import { dayRanges } from "../config/dayRanges";
+import { DAY, dayRanges, WEEK } from "../config/dayRanges";
 import "./DateRanger.scss";
 
 function DateRanger() {
@@ -16,7 +16,9 @@ function DateRanger() {
   const handleButtonOnClick = (range) => {
     setSelectedRange(range);
     setChartData(null);
-    handleUpdateDayRange({ range });
+    setTimeout(() => {
+      handleUpdateDayRange({ range });
+    }, 100);
   };
 
   const isActive = (value) => selectedRange === value;
@@ -25,16 +27,16 @@ function DateRanger() {
 
   useEffect(() => {
     if (daily) {
-      setSelectedRange("7days");
+      setSelectedRange(WEEK);
     } else {
-      setSelectedRange("1day");
+      setSelectedRange(DAY);
     }
   }, [daily, setSelectedRange]);
 
   return (
     <div className="buttons">
       {dayRanges.map((range, index) => {
-        if (daily && range.value === "1day") return null;
+        if (daily && range.value === DAY) return null;
         return (
           <button
             type="button"

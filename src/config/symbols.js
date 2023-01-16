@@ -1,5 +1,12 @@
+import { DAY, WEEK } from "./dayRanges";
+
 export const TSCO = "TSCO.LON";
 export const IBM = "IBM";
+
+export const symbolDataDefaultRange = {
+  "TSCO.LON": WEEK,
+  IBM: DAY,
+};
 
 export const fetchConfig = {
   IBM: {

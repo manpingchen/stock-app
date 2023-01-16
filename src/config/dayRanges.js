@@ -1,18 +1,23 @@
+export const DAY = "1day";
+export const WEEK = "7days";
+export const MONTH = "1month";
+export const MAX = "max";
+
 export const dayRanges = [
   {
     name: "1 D",
-    value: "1day",
+    value: DAY,
   },
   {
     name: "7 D",
-    value: "7days",
+    value: WEEK,
   },
   {
     name: "1 M",
-    value: "1month",
+    value: MONTH,
   },
   {
     name: "max",
-    value: "max",
+    value: MAX,
   },
 ];

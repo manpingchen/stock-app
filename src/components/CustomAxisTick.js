@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { DateRangeContext } from "../pages/TimeSeriesChart";
 import { datetimeFormatter } from "../helpers/dateHandlers";
+import { DAY, MAX, MONTH, WEEK } from "../config/dayRanges";
 
 function CustomAxisTick(props) {
   const { metaData, selectedRange } = useContext(DateRangeContext);
@@ -11,7 +12,7 @@ function CustomAxisTick(props) {
     const { value } = payload;
     let text;
 
-    if (selectedRange === "1day") {
+    if (selectedRange === DAY) {
       text = datetimeFormatter({
         date: value,
         config: {
@@ -20,7 +21,7 @@ function CustomAxisTick(props) {
       });
     }
 
-    if (selectedRange === "7days" || selectedRange === "1month") {
+    if (selectedRange === WEEK || selectedRange === MONTH) {
       text = datetimeFormatter({
         date: value,
         config: {
@@ -29,7 +30,7 @@ function CustomAxisTick(props) {
         },
       });
     }
-    if (selectedRange === "max") {
+    if (selectedRange === MAX) {
       text = datetimeFormatter({
         date: value,
         config: {
