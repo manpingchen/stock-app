@@ -135,6 +135,7 @@ function TimeSeriesLineChart() {
       value={{
         isPending,
         chartData,
+        setChartData,
         metaData,
         selectedRange,
         setSelectedRange,
