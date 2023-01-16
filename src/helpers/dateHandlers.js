@@ -1,4 +1,4 @@
-import { DAY, WEEK, MONTH, MAX } from "../config/dayRanges";
+import { DAY, WEEK, MONTH } from "../config/dayRanges";
 
 export const sortDatesAsc = (key) => (a, b) => {
   return new Date(a[key]) - new Date(b[key]);
@@ -7,7 +7,7 @@ export const sortDatesAsc = (key) => (a, b) => {
 export const subtractDays = (date, range) => {
   
   let days;
-  
+
   switch (range) {
     case WEEK:
       days = 7;
